@@ -24,10 +24,17 @@ def locate_all_files(path):
 
     return files_found
 
+def identity_variables(line):
+    """Identify makefile variables"""
+    pass
 
-def convert_variables():
+def convert_variable(name, value):
     """convert all makefile variable style to cmake style"""
     pass
+
+def define_variable(name, value):
+    """Define an cmake style variable"""
+    return "set({0} \"{1}\")".format(name, value)
 
 def identify_multilines_command():
     """Multilines command ends with a backslash '\'"""
@@ -57,10 +64,6 @@ def get_all_system_command():
     """ Retrieve all executable callable by the system"""
     pass
 
-def set_variables():
-    """set variables using cmake style """
-    pass
-
 def call_tree():
     """Identify all nodes and how they related
     kind of dependency tree"""
@@ -70,4 +73,5 @@ if __name__ == '__main__':
     path = sys.argv[1]
     files = locate_all_files(path)
     print(files)
+    print(define_variable("CXX_FLAGS", "-Werror"))
 
