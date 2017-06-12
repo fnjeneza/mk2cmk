@@ -1,7 +1,9 @@
 #/bin/env python3
 
 import os
+import re
 import sys
+
 
 class node:
     top = []
@@ -24,9 +26,19 @@ def locate_all_files(path):
 
     return files_found
 
-def identity_variables(line):
-    """Identify makefile variables"""
-    pass
+def identify_variables(line):
+    """Identify makefile variables
+    return a list of tuple (first, last, name) which corresponds to the
+    first and last variable position and name of the variable"""
+
+    # list of match tuple
+    matches = []
+    # macthes $(variable)
+    reg = re.compile('\$\(?\W+\)?')
+    iterator = reg.finditer(line);
+    for match in iterator:
+        matches.append(match.span());
+    return matches
 
 def convert_variable(name, value):
     """convert all makefile variable style to cmake style"""
@@ -74,4 +86,7 @@ if __name__ == '__main__':
     files = locate_all_files(path)
     print(files)
     print(define_variable("CXX_FLAGS", "-Werror"))
+
+    line = "hello $(world)"
+    print(identify_variables(line))
 
