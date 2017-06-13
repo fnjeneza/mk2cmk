@@ -37,14 +37,24 @@ def identify_variables(line):
     reg = re.compile('\$\(?(\w+)\)?')
     iterator = reg.finditer(line);
     for match in iterator:
+        # start and end position
         start, end = match.span()
+        # raw name. Name without deleimiters
+        raw_name = match.group()
+        # name of  the varialbe
         name = match.group(1)
-        matches.append((start,end,name))
+        # start, name , variable tuple
+        matches.append((start,end,raw_name,name))
     return matches
 
-def convert_variable(name, value):
-    """convert all makefile variable style to cmake style"""
-    pass
+def convert_variable(line, matches):
+    """convert all makefile variable style to cmake style
+    matches: a list of tuple (start, end, raw_name, name)"""
+    for _,_,raw_name,name in matches:
+        new_raw_name= "${%s}" % name
+        line = line.replace(raw_name, new_raw_name)
+
+    return line
 
 def define_variable(name, value):
     """Define an cmake style variable"""
@@ -90,5 +100,8 @@ if __name__ == '__main__':
     print(define_variable("CXX_FLAGS", "-Werror"))
 
     line = "hello $(world) $one"
-    print(identify_variables(line))
+    matches = identify_variables(line)
+    print(matches)
+    print(line)
+    print(convert_variable(line, matches))
 
