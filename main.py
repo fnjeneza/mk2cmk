@@ -33,11 +33,13 @@ def identify_variables(line):
 
     # list of match tuple
     matches = []
-    # macthes $(variable)
-    reg = re.compile('\$\(?\W+\)?')
+    # macthes $(variable) or $variable
+    reg = re.compile('\$\(?(\w+)\)?')
     iterator = reg.finditer(line);
     for match in iterator:
-        matches.append(match.span());
+        start, end = match.span()
+        name = match.group(1)
+        matches.append((start,end,name))
     return matches
 
 def convert_variable(name, value):
@@ -87,6 +89,6 @@ if __name__ == '__main__':
     print(files)
     print(define_variable("CXX_FLAGS", "-Werror"))
 
-    line = "hello $(world)"
+    line = "hello $(world) $one"
     print(identify_variables(line))
 
