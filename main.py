@@ -72,9 +72,15 @@ def identify_multiple_commands():
     """Multiple commands are separated by a semi-colon ';'"""
     pass
 
-def identify_include():
+def identify_include(line):
     """Include is used to insert a script command in makefile"""
-    pass
+    return line.strip().startswith("include")
+
+def replace_include(line):
+    """Replace include expression by a cmake one"""
+    len_include = len("include")
+    return "include(%s)" % line[len_include:].strip()
+
 
 def identify_target():
     """check if the line define a target"""
@@ -99,7 +105,12 @@ def is_affectation(line):
         variable = line[:index]
         value = "${%s} " %variable.strip()
         value += line[index+2:].strip()
-
+        return (variable, value)
+    index = line.find("+=")
+    if(index >= 0):
+        variable = line[:index]
+        value = "${%s} " %variable.strip()
+        value += line[index+2:].strip()
         return (variable, value)
 
     index = line.find('=')
@@ -147,6 +158,8 @@ def process_line(line):
     if is_comment(line):
         return line
     line =  find_and_replace_variables(line)
+    if identify_include(line):
+        return replace_include(line)
     if identify_ifndef(line):
         return replace_ifndef(line)
     if identify_endif(line):
@@ -155,12 +168,15 @@ def process_line(line):
     if affectation:
         return set_variable(affectation[0], affectation[1])
 
+    return line.strip()
+
 if __name__ == '__main__':
-    with open("make.mk") as makefile:
+    with open("test.mk") as makefile:
         for line in makefile.readlines():
             line = process_line(line)
             print(line)
 
+    exit()
     print(replace_ifndef("var"))
     print(is_affectation("hello=world"))
     print(is_affectation("hello :=world"))
