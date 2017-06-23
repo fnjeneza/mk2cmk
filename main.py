@@ -84,6 +84,32 @@ def is_comment(line):
     """Check if the line is a comment"""
     return line.strip().startswith('#')
 
+def is_affectation(line):
+    """ Affectation contains '=' or ':='
+    If so, return (variable, value)"""
+    variable = ""
+    value = ""
+    index = line.find(":=")
+    if(index >= 0):
+        variable = line[:index]
+        value = line[index+2:]
+        return (variable, value)
+
+    index = line.find('=')
+    if(index >=0):
+        variable = line[:index]
+        value = line[index+1:]
+        return (variable, value)
+
+    return None
+
+def is_comparison(line):
+    """ Check if there is comparison symbol"""
+    index = line.find("==")
+    if(index >= 0):
+        return True
+    return False
+
 def get_all_system_command():
     """ Retrieve all executable callable by the system"""
     pass
@@ -106,6 +132,8 @@ def call_tree():
 
 if __name__ == '__main__':
     print(replace_ifndef("var"))
+    print(is_affectation("hello=world"))
+    print(is_affectation("hello == world"))
     exit()
     path = sys.argv[1]
     files = locate_all_files(path)
