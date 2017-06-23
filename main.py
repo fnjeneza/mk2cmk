@@ -57,12 +57,12 @@ def convert_variable(line, matches):
     return line
 
 def find_and_replace_variables(line):
-    matches = indetify_variables(line)
-    return convert_variables(line, matches)
+    matches = identify_variables(line)
+    return convert_variable(line, matches)
 
 def set_variable(name, value):
     """Define an cmake style variable"""
-    return "set({0} \"{1}\")".format(name, value)
+    return "set({0} \"{1}\")".format(name.strip(), value.strip())
 
 def identify_multilines_command():
     """Multilines command ends with a backslash '\'"""
@@ -124,14 +124,19 @@ def get_all_system_command():
 
 def identify_ifndef(line):
     """ Identify it it is an ifndef block """
-    return line.strip().starswith("ifndef")
+    return line.strip().startswith("ifndef")
 
 def replace_ifndef(expression):
+    ifndef = "ifndef"
+    index = expression.find(ifndef)
+    expression = expression[index+len(ifndef):]
+    expression = expression.strip()
+
     return "if(NOT DEFINE {0})".format(expression)
 
 def identify_endif(line):
     """ Identify an 'endif' instruction """
-    return line.strip().starswith("endif")
+    return line.strip().startswith("endif")
 
 def call_tree():
     """Identify all nodes and how they related
@@ -151,6 +156,11 @@ def process_line(line):
         return set_variable(affectation[0], affectation[1])
 
 if __name__ == '__main__':
+    with open("make.mk") as makefile:
+        for line in makefile.readlines():
+            line = process_line(line)
+            print(line)
+
     print(replace_ifndef("var"))
     print(is_affectation("hello=world"))
     print(is_affectation("hello :=world"))
