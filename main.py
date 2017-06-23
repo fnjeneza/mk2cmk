@@ -56,7 +56,11 @@ def convert_variable(line, matches):
 
     return line
 
-def define_variable(name, value):
+def find_and_replace_variables(line):
+    matches = indetify_variables(line)
+    return convert_variables(line, matches)
+
+def set_variable(name, value):
     """Define an cmake style variable"""
     return "set({0} \"{1}\")".format(name, value)
 
@@ -137,7 +141,14 @@ def call_tree():
 def process_line(line):
     if is_comment(line):
         return line
-    pass
+    line =  find_and_replace_variables(line)
+    if identify_ifndef(line):
+        return replace_ifndef(line)
+    if identify_endif(line):
+        return "endif()"
+    affectation = is_affectation(line)
+    if affectation:
+        return set_variable(affectation[0], affectation[1])
 
 if __name__ == '__main__':
     print(replace_ifndef("var"))
@@ -148,7 +159,7 @@ if __name__ == '__main__':
     path = sys.argv[1]
     files = locate_all_files(path)
     print(files)
-    print(define_variable("CXX_FLAGS", "-Werror"))
+    print(set_variable("CXX_FLAGS", "-Werror"))
 
     line = "hello $(world) $one"
     matches = identify_variables(line)
