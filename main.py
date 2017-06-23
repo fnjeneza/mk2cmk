@@ -98,7 +98,7 @@ def is_affectation(line):
     if(index >= 0):
         variable = line[:index]
         value = "${%s} " %variable.strip()
-        value += line[index+2:]
+        value += line[index+2:].strip()
 
         return (variable, value)
 
