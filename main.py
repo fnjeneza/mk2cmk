@@ -72,7 +72,7 @@ def identify_include():
     """Include is used to insert a script command in makefile"""
     pass
 
-def identify_targets():
+def identify_target():
     """check if the line define a target"""
     pass
 
@@ -80,13 +80,21 @@ def identify_ifelse_block():
     """identify if else block"""
     pass
 
-def is_comment():
+def is_comment(line):
     """Check if the line is a comment"""
-    pass
+    return line.strip().startswith('#')
 
 def get_all_system_command():
     """ Retrieve all executable callable by the system"""
     pass
+
+def identify_ifndef(line):
+    """ Identify it it is an ifndef block """
+    return line.strip().starswith("ifndef")
+
+def identify_endif(line):
+    """ Identify an 'endif' instruction """
+    return line.strip().starswith("endif")
 
 def call_tree():
     """Identify all nodes and how they related
