@@ -92,6 +92,9 @@ def identify_ifndef(line):
     """ Identify it it is an ifndef block """
     return line.strip().starswith("ifndef")
 
+def replace_ifndef(expression):
+    return "if(NOT DEFINE {0})".format(expression)
+
 def identify_endif(line):
     """ Identify an 'endif' instruction """
     return line.strip().starswith("endif")
@@ -102,6 +105,8 @@ def call_tree():
     pass
 
 if __name__ == '__main__':
+    print(replace_ifndef("var"))
+    exit()
     path = sys.argv[1]
     files = locate_all_files(path)
     print(files)
@@ -112,4 +117,5 @@ if __name__ == '__main__':
     print(matches)
     print(line)
     print(convert_variable(line, matches))
+
 
