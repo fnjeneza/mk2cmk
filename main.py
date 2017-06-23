@@ -132,7 +132,7 @@ def replace_ifndef(expression):
     expression = expression[index+len(ifndef):]
     expression = expression.strip()
 
-    return "if(NOT DEFINE {0})".format(expression)
+    return "if(NOT DEFINED {0})".format(expression)
 
 def identify_endif(line):
     """ Identify an 'endif' instruction """
