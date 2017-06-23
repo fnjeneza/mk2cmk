@@ -87,19 +87,23 @@ def is_comment(line):
 def is_affectation(line):
     """ Affectation contains '=' or ':='
     If so, return (variable, value)"""
+
     variable = ""
     value = ""
     index = line.find(":=")
     if(index >= 0):
         variable = line[:index]
-        value = line[index+2:]
+        value = "${%s} " %variable.strip()
+        value += line[index+2:]
+
         return (variable, value)
 
     index = line.find('=')
     if(index >=0):
-        variable = line[:index]
-        value = line[index+1:]
-        return (variable, value)
+        if not is_comparison(line):
+            variable = line[:index]
+            value = line[index+1:]
+            return (variable, value)
 
     return None
 
@@ -130,10 +134,16 @@ def call_tree():
     kind of dependency tree"""
     pass
 
+def process_line(line):
+    if is_comment(line):
+        return line
+    pass
+
 if __name__ == '__main__':
     print(replace_ifndef("var"))
     print(is_affectation("hello=world"))
-    print(is_affectation("hello == world"))
+    print(is_affectation("hello :=world"))
+    print(is_affectation("hello ==world"))
     exit()
     path = sys.argv[1]
     files = locate_all_files(path)
