@@ -1,0 +1,35 @@
+def is_expression_balanced(expression):
+    """Check if an expression is balanced
+    Return index array(start,end) of sub-expression
+    Return None if not balanced
+    $(word $(words $(sources)), $(shell ls /tmp)) is balanced"""
+    import queue
+    _queue = queue.LifoQueue()
+    index = 0
+    matchers = []
+    start = "$("
+    end = ')'
+    index = 0
+    length = len(expression)
+    for i in expression:
+        if index <= length-2:
+            # check if the 2 characters are equal to start
+            comp = i+expression[index+1]
+            if comp == start:
+                # push index if a opening match is found
+                _queue.put(index)
+
+        if i == end:
+            if _queue.empty():
+                return None
+
+            # pop index if a closing match is found
+            _ind = _queue.get()
+            matchers.append((_ind,index))
+        index += 1
+
+    # if queue is empty means the expression is balanced
+    if _queue.empty():
+        return matchers
+
+    return None
