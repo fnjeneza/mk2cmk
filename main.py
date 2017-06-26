@@ -62,8 +62,13 @@ def replace_variables_by_temp_variables(line):
 def replace_temp_variables_by_formated_variables(line_matchers):
     _line, matchers = line_matchers
     for key in matchers:
-        _line = _line.replace(key, matchers[key])
+        _,_,_,name = identify_variables(matchers[key])[0]
+        name = "${%s}" % name
+        _line = _line.replace(key, name)
     return _line
+
+def expand_builtin_function():
+    pass
 
 def convert_variable(line, matches):
     """convert all makefile variable style to cmake style
@@ -104,7 +109,6 @@ def replace_include(line):
     """Replace include expression by a cmake one"""
     len_include = len("include")
     return "include(%s)" % line[len_include:].strip()
-
 
 def identify_target():
     """check if the line define a target"""
@@ -179,16 +183,13 @@ def is_comparison(line):
 def words_string_substitution(line, output_variable):
     """Identify and replace $(words el1 el2 el3) or
     $(words $(container))"""
-    variables= identify_variables(line)
-    print(variables)
-    reg = re.compile('\$\(words (.*)\)')
+    reg = re.compile('\$\(words ([\w ]+)\)')
     iterator = reg.finditer(line)
+    _line = str()
     for it in iterator:
-        list_name = it.group(1)
-        _line = "list(LENGTH %s %s)" %(list_name, output_variable)
-        print(_line)
-
-
+        list_value = it.group(1)
+        _line = "list(LENGTH %s %s)" %(list_value, output_variable)
+    return _line
 
 def get_all_system_command():
     """ Retrieve all executable callable by the system"""
@@ -266,11 +267,22 @@ if __name__ == '__main__':
     # identify variables in a random text
     text = "this is $(first) and not $( last) $( variables ). $(_not) $nested"
     variables = identify_variables(text)
-    print(variables)
 
     text = "what about nested like $($(this)) or like $(that $(one))"
     variables = identify_variables(text)
-    print(variables)
+
+    text = "$(words a b c)"
+    line_matchers = replace_variables_by_temp_variables(text)
+    if line_matchers:
+        text = line_matchers[0]
+
+    line = words_string_substitution(text,"output_variable")
+
+    if line_matchers:
+        line = replace_temp_variables_by_formated_variables((line,line_matchers[1]))
+    print("**\n%s" % line)
+
+
     exit()
     print(replace_ifndef("var"))
     print(is_affectation("hello=world"))
