@@ -94,24 +94,21 @@ def is_comment(line):
     """Check if the line is a comment"""
     return line.strip().startswith('#')
 
-def is_affectation(line):
+def is_variable_assignement(line):
     """ Affectation contains '=' or ':='
     If so, return (variable, value)"""
 
     variable = ""
     value = ""
-    index = line.find(":=")
-    if(index >= 0):
-        variable = line[:index]
-        value = "${%s} " %variable.strip()
-        value += line[index+2:].strip()
-        return (variable, value)
-    index = line.find("+=")
-    if(index >= 0):
-        variable = line[:index]
-        value = "${%s} " %variable.strip()
-        value += line[index+2:].strip()
-        return (variable, value)
+    symbols = [":=", "::=", "+="]
+    for symbol in symbols:
+        index = line.find(symbol)
+        if(index >= 0):
+            variable = line[:index-1]
+            value = "${%s} " %variable.strip()
+            index = index + len(symbol)
+            value += line[index:].strip()
+            return (variable, value)
 
     index = line.find('=')
     if(index >=0):
@@ -121,6 +118,23 @@ def is_affectation(line):
             return (variable, value)
 
     return None
+
+def is_conditional_variable_assignement(line):
+    variable = ""
+    value = ""
+    index = line.find("?=")
+    if(index >= 0):
+        variable = line[:index]
+        index = index + 2
+        value = line[index:].strip()
+        return (variable, value)
+
+    return None
+
+def set_conditional_variable(name, value):
+    var_def = set_variable(name, value)
+    _line = "if(NOT DEFINED {0})\n {1}\nendif()".format(name.strip(), var_def)
+    return _line
 
 def is_comparison(line):
     """ Check if there is comparison symbol"""
@@ -170,9 +184,16 @@ def process_line(line):
         return "endif()"
     if identify_else(line):
         return "else()"
-    affectation = is_affectation(line)
-    if affectation:
-        return set_variable(affectation[0], affectation[1])
+    cond_assignement = is_conditional_variable_assignement(line)
+    if cond_assignement:
+        name = cond_assignement[0]
+        value = cond_assignement[1]
+        return set_conditional_variable(name, value)
+    assignement = is_variable_assignement(line)
+    if assignement:
+        name = assignement[0]
+        value = assignement[1]
+        return set_variable(name,value)
 
     return line.strip()
 
