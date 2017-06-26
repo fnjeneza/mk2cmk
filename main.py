@@ -145,6 +145,10 @@ def replace_ifndef(expression):
 
     return "if(NOT DEFINED {0})".format(expression)
 
+def identify_else(line):
+    """ Identify 'else' syntax """
+    return line.strip().startswith("else")
+
 def identify_endif(line):
     """ Identify an 'endif' instruction """
     return line.strip().startswith("endif")
@@ -164,6 +168,8 @@ def process_line(line):
         return replace_ifndef(line)
     if identify_endif(line):
         return "endif()"
+    if identify_else(line):
+        return "else()"
     affectation = is_affectation(line)
     if affectation:
         return set_variable(affectation[0], affectation[1])
