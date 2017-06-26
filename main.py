@@ -33,8 +33,8 @@ def identify_variables(line):
 
     # list of match tuple
     matches = []
-    # macthes $(variable) or $variable
-    reg = re.compile('\$\(?(\w+)\)?')
+    # macthes $(variable) or $variable $( variable )
+    reg = re.compile('\$\( *(\w+) *\)')
     iterator = reg.finditer(line);
     for match in iterator:
         # start and end position
@@ -46,6 +46,24 @@ def identify_variables(line):
         # start, name , variable tuple
         matches.append((start,end,raw_name,name))
     return matches
+
+def replace_variables_by_temp_variables(line):
+    _line = line
+    matches = identify_variables(line)
+    matchers = {}
+    i = 0
+    for _,_,name,_ in matches:
+        tmp = "_%s" % i
+        _line = _line.replace(name, tmp)
+        matchers[tmp] = name
+        i += 1
+    return (_line, matchers)
+
+def replace_temp_variables_by_formated_variables(line_matchers):
+    _line, matchers = line_matchers
+    for key in matchers:
+        _line = _line.replace(key, matchers[key])
+    return _line
 
 def convert_variable(line, matches):
     """convert all makefile variable style to cmake style
@@ -64,13 +82,19 @@ def set_variable(name, value):
     """Define an cmake style variable"""
     return "set({0} \"{1}\")".format(name.strip(), value.strip())
 
-def identify_multilines_command():
+def identify_multilines_command(line):
     """Multilines command ends with a backslash '\'"""
-    pass
+    index = line.find('\'')
+    if(index >=0):
+        return True
+    return False
 
-def identify_multiple_commands():
+def identify_multiple_commands(line):
     """Multiple commands are separated by a semi-colon ';'"""
-    pass
+    index =  line.find(';')
+    if(index >=0):
+        return True
+    return False
 
 def identify_include(line):
     """Include is used to insert a script command in makefile"""
@@ -131,6 +155,15 @@ def is_conditional_variable_assignement(line):
 
     return None
 
+def is_shell_variable_assignement(line):
+    variable = ""
+    value = ""
+    index = line.find("!=")
+    if(index >= 0):
+        return True
+    return False
+
+
 def set_conditional_variable(name, value):
     var_def = set_variable(name, value)
     _line = "if(NOT DEFINED {0})\n {1}\nendif()".format(name.strip(), var_def)
@@ -142,6 +175,20 @@ def is_comparison(line):
     if(index >= 0):
         return True
     return False
+
+def words_string_substitution(line, output_variable):
+    """Identify and replace $(words el1 el2 el3) or
+    $(words $(container))"""
+    variables= identify_variables(line)
+    print(variables)
+    reg = re.compile('\$\(words (.*)\)')
+    iterator = reg.finditer(line)
+    for it in iterator:
+        list_name = it.group(1)
+        _line = "list(LENGTH %s %s)" %(list_name, output_variable)
+        print(_line)
+
+
 
 def get_all_system_command():
     """ Retrieve all executable callable by the system"""
@@ -175,6 +222,9 @@ def call_tree():
 def process_line(line):
     if is_comment(line):
         return line
+    if identify_multiple_commands(line):
+        print("*** multiple command")
+        return str()
     line =  find_and_replace_variables(line)
     if identify_include(line):
         return replace_include(line)
@@ -184,6 +234,10 @@ def process_line(line):
         return "endif()"
     if identify_else(line):
         return "else()"
+    if is_shell_variable_assignement(line):
+        print("shell assignement detected")
+        return str()
+
     cond_assignement = is_conditional_variable_assignement(line)
     if cond_assignement:
         name = cond_assignement[0]
@@ -203,6 +257,20 @@ if __name__ == '__main__':
             line = process_line(line)
             print(line)
 
+    text = "this $(_Is) a $(cond $(variables9))"
+    print(text)
+    line_matchers = replace_variables_by_temp_variables(text)
+    line = replace_temp_variables_by_formated_variables(line_matchers)
+    print(line)
+
+    # identify variables in a random text
+    text = "this is $(first) and not $( last) $( variables ). $(_not) $nested"
+    variables = identify_variables(text)
+    print(variables)
+
+    text = "what about nested like $($(this)) or like $(that $(one))"
+    variables = identify_variables(text)
+    print(variables)
     exit()
     print(replace_ifndef("var"))
     print(is_affectation("hello=world"))
