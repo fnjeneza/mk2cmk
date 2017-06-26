@@ -191,6 +191,18 @@ def words_string_substitution(line, output_variable):
         _line = "list(LENGTH %s %s)" %(list_value, output_variable)
     return _line
 
+def word_string_substitution(line, output_variable="output_variable"):
+    """Identify and replace $(word n,text)"""
+    reg = re.compile('\$\(word (\w+),([ \w]+)\)')
+    iterator = reg.finditer(line)
+    _line = ""
+    for it in iterator:
+        n = it.group(1)
+        text = it.group(2)
+        _line = "list(GET %s %s %s)" %(text, n, output_variable)
+
+    return _line
+
 def get_all_system_command():
     """ Retrieve all executable callable by the system"""
     pass
@@ -281,6 +293,10 @@ if __name__ == '__main__':
     if line_matchers:
         line = replace_temp_variables_by_formated_variables((line,line_matchers[1]))
     print("**\n%s" % line)
+
+    text = "ifndef $(word 2, foo bar baz)"
+    line = word_string_substitution(text)
+    print(line)
 
 
     exit()
