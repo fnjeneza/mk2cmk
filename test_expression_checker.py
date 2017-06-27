@@ -45,12 +45,12 @@ def test_is_variable():
 
 def test_replace_variable():
     expression = "$(word $(words $(sources)), $(shell ls /tmp))"
-    tmp, original, _= ec._replace_variable(15,25,"_1", expression)
+    tmp, original, _= ec._replace_variable(15,24,"_1", expression)
     assert(tmp == "_1")
     assert(original == "$(sources)")
 
     positions = [(15,24)]
-    expected = "$(word $(words __0)), $(shell ls /tmp))"
+    expected = "$(word $(words __0), $(shell ls /tmp))"
     result, subst = ec._replace_variables(positions,expression)
     assert(expected == result)
     assert(len(subst) == 1)
@@ -61,4 +61,19 @@ def test_replace_variable():
     result, subst = ec._replace_variables(positions,expression)
     assert(expected == result)
     assert(len(subst) == 2)
+
+def test_find_variables_position():
+    expression = "$(word $(words $(sources)), $(var2))"
+    positions = ec._find_variables_position(expression)
+    assert(positions == [(15,24), (28,34)])
+
+    expression = "this has no $(valide value)"
+    positions = ec._find_variables_position(expression)
+    assert(len(positions) == 0)
+
+def test_find_and_replace_variables():
+    expression = "$(word $(words $(sources)), $(var2))"
+    expr, map_found = ec.find_and_replace_variables(expression)
+    assert(expr == "$(word $(words __1), __0)")
+
 
