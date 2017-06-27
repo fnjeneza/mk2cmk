@@ -33,3 +33,18 @@ def test_is_variable():
     variable = ec.is_variable(15, 24, expression)
     assert(variable)
 
+    expression = "$(word n, text)"
+    l = len(expression)
+    variable = ec.is_variable(0, l, expression)
+    assert(not variable)
+
+    expression = "$(word)"
+    l = len(expression)
+    variable = ec.is_variable(0, l, expression)
+    assert(not variable)
+
+def test_replace_variable():
+    expression = "$(word $(words $(sources)), $(shell ls /tmp))"
+    tmp, original = ec.replace_variable(15,25,"_1", expression)
+    assert(tmp == "_1")
+    assert(original == "$(sources)")

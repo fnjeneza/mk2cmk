@@ -62,3 +62,8 @@ def is_variable(start, end, expression):
         return False
     return True
 
+def replace_variable(start, end, tmp_variable, expression):
+    """Replace a substring at given position in an expression"""
+    new_expression = expression[0:start]+tmp_variable+expression[end:]
+    return tmp_variable, expression[start:end]
+
