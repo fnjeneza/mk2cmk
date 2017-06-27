@@ -2,6 +2,7 @@
 keywords = ["word", "words", "findstring", "strip", "subst", "sort", "dir",
         "suffix", "basename", "addsuffix", "addprefix", "join", "wildcard",
         "realpath", "abspath", "foreach", "file", "call", "value"]
+
 def is_expression_balanced(expression):
     """Check if an expression is balanced
     Return index array(start,end) of sub-expression
@@ -62,8 +63,25 @@ def is_variable(start, end, expression):
         return False
     return True
 
-def replace_variable(start, end, tmp_variable, expression):
+def _replace_variable(start, end, new_variable, expression):
     """Replace a substring at given position in an expression"""
-    new_expression = expression[0:start]+tmp_variable+expression[end:]
-    return tmp_variable, expression[start:end]
+    new_expression = expression[0:start]+new_variable+expression[end:]
+    return new_variable, expression[start:end], new_expression
 
+def _replace_variables(positions, expression):
+    """Replace multiple variables in an expression"""
+    # map which stores temporary variable as key and variable sustituted as
+    # value
+    variables_subst_map = {}
+    # assume that position container is sorted in great order
+    exp = expression
+    index = 0
+    # start by the end
+    positions.reverse()
+    for pos in positions:
+        temp_value = "__%s" % index
+        tmp_value, value, exp = _replace_variable(pos[0], pos[1], temp_value, exp)
+        variables_subst_map[tmp_value] = value
+        index += 1
+
+    return exp, variables_subst_map
