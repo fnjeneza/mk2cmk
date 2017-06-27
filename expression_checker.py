@@ -1,4 +1,7 @@
 
+keywords = ["word", "words", "findstring", "strip", "subst", "sort", "dir",
+        "suffix", "basename", "addsuffix", "addprefix", "join", "wildcard",
+        "realpath", "abspath", "foreach", "file", "call", "value"]
 def is_expression_balanced(expression):
     """Check if an expression is balanced
     Return index array(start,end) of sub-expression
@@ -47,4 +50,15 @@ def contains_delimiter(start, end, matchers):
             delimiters.append((start,end))
     return delimiters
 
+def is_variable(start, end, expression):
+    """Check if sub expression in delimiters is a variable
+    assume the sub expression does not have delimiters inside"""
+    word = expression[start+2:end-1].strip()
+    # if contains space => it is not a variable
+    if word.find(" ") >= 0:
+        return False
+
+    if word in keywords:
+        return False
+    return True
 

@@ -25,3 +25,11 @@ def test_contains_delimiter():
     delimiters = ec.contains_delimiter(7,25,matchers)
     assert(len(delimiters)>0)
 
+def test_is_variable():
+    expression = "$(word $(words $(sources)), $(shell ls /tmp))"
+    variable = ec.is_variable(28,43, expression)
+    assert(not variable)
+
+    variable = ec.is_variable(15, 24, expression)
+    assert(variable)
+
