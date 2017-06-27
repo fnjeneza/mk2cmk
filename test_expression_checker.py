@@ -73,7 +73,7 @@ def test_replace_variable():
     assert(len(subst) == 1)
 
     expression = "this is $(a) $(var)"
-    positions = [(8,12), (13,19)]
+    positions = [(8,11), (13,19)]
     expected = "this is __1 __0"
     result, subst = ec._replace_variables(positions,expression)
     assert(expected == result)
