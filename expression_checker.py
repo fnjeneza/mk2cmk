@@ -1,3 +1,4 @@
+
 def is_expression_balanced(expression):
     """Check if an expression is balanced
     Return index array(start,end) of sub-expression
@@ -33,3 +34,17 @@ def is_expression_balanced(expression):
         return matchers
 
     return None
+
+def contains_delimiter(start, end, matchers):
+    """Check if the expression contains a delimiter
+    e.g $(words $(sources)) contains a delimiter which is $(sources)"""
+    assert(start < end)
+    assert(len(matchers)>0)
+
+    delimiters = []
+    for m in matchers:
+        if m[0] > start and m[1] < end:
+            delimiters.append((start,end))
+    return delimiters
+
+

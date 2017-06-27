@@ -11,6 +11,17 @@ def test_is_expression_balanced():
     matchers = ec.is_expression_balanced(expression)
     assert(not matchers)
 
+def test_contains_delimiter():
+    expression = "$(word $(words $(sources)), $(shell ls /tmp))"
+    matchers = ec.is_expression_balanced(expression)
+    assert(matchers)
 
+    delimiters = ec.contains_delimiter(0,44,matchers)
+    assert(len(delimiters) == 3)
 
+    delimiters = ec.contains_delimiter(28,43,matchers)
+    assert(len(delimiters) == 0)
+
+    delimiters = ec.contains_delimiter(7,25,matchers)
+    assert(len(delimiters)>0)
 
