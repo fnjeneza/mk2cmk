@@ -62,3 +62,11 @@ def test_replace_variable():
     assert(expected == result)
     assert(len(subst) == 2)
 
+def test_find_variables_position():
+    expression = "$(word $(words $(sources)), $(var2))"
+    positions = ec.find_variables_position(expression)
+    assert(positions == [(15,24), (28,34)])
+
+    expression = "this has no $(valide value)"
+    positions = ec.find_variables_position(expression)
+    assert(len(positions) == 0)

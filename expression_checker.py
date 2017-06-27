@@ -63,6 +63,18 @@ def is_variable(start, end, expression):
         return False
     return True
 
+def find_variables_position(expression):
+    """Find all positions that match a value expression"""
+    matchers = is_expression_balanced(expression)
+    positions = []
+
+    for m in matchers:
+        is_var = is_variable(m[0], m[1], expression)
+        if is_var:
+            positions.append(m)
+
+    return positions
+
 def _replace_variable(start, end, new_variable, expression):
     """Replace a substring at given position in an expression"""
     new_expression = expression[0:start]+new_variable+expression[end:]
