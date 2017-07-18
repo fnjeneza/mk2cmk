@@ -63,7 +63,7 @@ def is_variable(start, end, expression):
         return False
     return True
 
-def find_variables_position(expression):
+def _find_variables_position(expression):
     """Find all positions that match a value expression"""
     matchers = is_expression_balanced(expression)
     positions = []
@@ -77,15 +77,15 @@ def find_variables_position(expression):
 
 def _replace_variable(start, end, new_variable, expression):
     """Replace a substring at given position in an expression"""
-    new_expression = expression[0:start]+new_variable+expression[end:]
-    return new_variable, expression[start:end], new_expression
+    new_expression = expression[0:start]+new_variable+expression[end+1:]
+    return new_variable, expression[start:end+1], new_expression
 
 def _replace_variables(positions, expression):
     """Replace multiple variables in an expression"""
-    # map which stores temporary variable as key and variable sustituted as
+    # dictionary for temporary variable as key and variable substituted as
     # value
     variables_subst_map = {}
-    # assume that position container is sorted in great order
+    # assume that position container is sorted in ascending order
     exp = expression
     index = 0
     # start by the end
@@ -97,3 +97,7 @@ def _replace_variables(positions, expression):
         index += 1
 
     return exp, variables_subst_map
+
+def find_and_replace_variables(expression):
+    positions = _find_variables_position(expression)
+    return  _replace_variables(positions, expression)
