@@ -1,5 +1,5 @@
 
-keywords = ["word", "words", "findstring", "strip", "subst", "sort", "dir",
+keywords = ["ifeq", "ifeq", "word", "words", "findstring", "strip", "subst", "sort", "dir",
         "suffix", "basename", "addsuffix", "addprefix", "join", "wildcard",
         "realpath", "abspath", "foreach", "file", "call", "value"]
 
