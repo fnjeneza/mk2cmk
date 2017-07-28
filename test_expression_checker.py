@@ -11,6 +11,12 @@ def test_is_expression_balanced():
     matchers = ec.is_expression_balanced(expression)
     assert(not matchers)
 
+    expression = "$(var)"
+    matchers = ec.is_expression_balanced(expression)
+    assert(len(matchers) == 1)
+    assert(matchers == [(0,5)])
+
+
 def test_contains_delimiter():
     expression = "$(word $(words $(sources)), $(shell ls /tmp))"
     matchers = ec.is_expression_balanced(expression)
@@ -44,6 +50,17 @@ def test_is_variable():
     assert(not variable)
 
 def test_replace_variable():
+    expression = " $(var) "
+    matchers = ec.is_expression_balanced(expression)
+    start = matchers[0][0]
+    end = matchers[0][1]
+    assert(start == 1)
+    assert(end == 6)
+    tmp, var, new_exp = ec._replace_variable(start,end,"__0", expression)
+    assert(tmp == "__0")
+    assert(var == "$(var)")
+    assert(new_exp == " __0 ")
+
     expression = "$(word $(words $(sources)), $(shell ls /tmp))"
     tmp, original, _= ec._replace_variable(15,24,"_1", expression)
     assert(tmp == "_1")

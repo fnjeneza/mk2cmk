@@ -54,7 +54,7 @@ def contains_delimiter(start, end, matchers):
 def is_variable(start, end, expression):
     """Check if sub expression in delimiters is a variable
     assume the sub expression does not have delimiters inside"""
-    word = expression[start+2:end-1].strip()
+    word = expression[start+2:end-1]
     # if contains space => it is not a variable
     if word.find(" ") >= 0:
         return False
@@ -77,7 +77,7 @@ def _find_variables_position(expression):
 
 def _replace_variable(start, end, new_variable, expression):
     """Replace a substring at given position in an expression"""
-    new_expression = expression[0:start]+new_variable+expression[end+1:]
+    new_expression = expression[:start]+new_variable+expression[end+1:]
     return new_variable, expression[start:end+1], new_expression
 
 def _replace_variables(positions, expression):
