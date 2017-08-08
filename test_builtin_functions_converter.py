@@ -14,3 +14,12 @@ def test_extract_subst_argument():
     assert "__1" == _from
     assert "__2" == _to
     assert "__3" == _text
+
+def test_subst_():
+    text = "$(subst ee, EE, feet on the street)"
+    result = fc.subst_(text)
+
+    expect = """set(output "")
+              string(REPLACE "ee" "EE" ${output} "feet on the street")"""
+    assert expect == result
+
