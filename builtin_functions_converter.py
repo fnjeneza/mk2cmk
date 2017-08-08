@@ -32,27 +32,21 @@ def ifdef_(arg):
 def wildcard_(arg):
     pass
 
-def subst_(subst_expression):
+def subst_(expression):
     """Return subst cmake equivalent"""
+    _from, _to, _text = _extract_subst_argument(expression)
     expr = """
     set(output "")
-    string(REPLACE "{}" "{}" ${output} {})""".format(arg1, arg2, text)
+    string(REPLACE "{}" "{}" ${output} {})""".format(_from, _to, _text)
     return expr
 
 def _extract_subst_argument(expression):
     """ extract substring argument from subst expression
-        $(subst _1,_2,_3)
+        $(subst _1, _2, _3)
+        $(subst ee, EE, feet on the street)
+        return _1, _2, _3
     """
-    space_position = expression.find(' ')
-    first_comma_position = expression.find(',')
-    second_comma_position = expression[first_comma_position+1:].find(',') +\
-                            first_comma_position
-    print(first_comma_position)
-    print(second_comma_position)
-
-    from_ = expression[space_position:first_comma_position]
-    to_ = expression[first_comma_position+1:second_comma_position+1]
-    length = len(expression)
-    text = expression[second_comma_position+2:length-1]
-
-    return (from_.strip(), to_.strip(), text.strip())
+    import re
+    reg = re.compile("\$\( *subst +(\w+), *(\w+), *([ \w]+) *\)")
+    index = reg.search(expression)
+    return index.group(1), index.group(2), index.group(3)
