@@ -17,9 +17,10 @@ def test_extract_subst_argument():
 
 def test_subst_():
     text = "$(subst ee, EE, feet on the street)"
-    result = fc.subst_(text)
+    result, var = fc.subst_(text)
 
     expect = """set(output "")
               string(REPLACE "ee" "EE" ${output} "feet on the street")"""
     assert expect == result
+    assert "${output}" == var
 

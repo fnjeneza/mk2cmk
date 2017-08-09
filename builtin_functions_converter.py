@@ -35,12 +35,13 @@ def wildcard_(arg):
 def subst_(expression):
     """Return subst cmake equivalent"""
     _from, _to, _text = _extract_subst_argument(expression)
+    output_var = "${output}"
     expr = """set(output "")
               string(REPLACE "{}" "{}" {} "{}")""".format(_from,
                                                           _to,
-                                                          "${output}",
+                                                          output_var,
                                                           _text)
-    return expr
+    return expr, output_var
 
 def _extract_subst_argument(expression):
     """ extract substring argument from subst expression
