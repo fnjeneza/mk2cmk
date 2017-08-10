@@ -64,6 +64,26 @@ def is_variable(start, end, expression):
         return False
     return True
 
+def is_builtin_function(start, end, expression):
+    """Check if sub expression in delimiters is a builtin function keyword"""
+    # remove the first delimiter and eventual heading white space
+    # $(   strip ee,EE,street) => strip ee,EE,street)
+    expression = expression[start+2:].lstrip()
+    # find the first white space
+    index =  expression.find(' ')
+
+    if index < 0:
+        return False
+
+    # retrieve the keyword
+    word = expression[:index]
+
+    # seqrch in keywords list
+    if word in keywords:
+        return True
+
+    return False
+
 def _find_variables_position(expression):
     """Find all positions that match a value expression"""
     matchers = is_expression_balanced(expression)
@@ -75,6 +95,7 @@ def _find_variables_position(expression):
             positions.append(m)
 
     return positions
+
 
 def _replace_variable(start, end, new_variable, expression):
     """Replace a substring at given position in an expression"""

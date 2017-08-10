@@ -49,6 +49,17 @@ def test_is_variable():
     variable = ec.is_variable(0, l, expression)
     assert(not variable)
 
+def test_is_builtin_keyword():
+    expression = "$(subst ee, EE, feet in the street)"
+    l = len(expression)
+    result = ec.is_builtin_function(0,l,expression)
+    assert True == result
+
+    expression = "ln -s $(    subst ee,EE,street)"
+    l = len(expression)
+    result = ec.is_builtin_function(6, l, expression)
+    assert True == result
+
 def test_replace_variable():
     expression = " $(var) "
     matchers = ec.is_expression_balanced(expression)
