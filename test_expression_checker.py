@@ -99,6 +99,11 @@ def test_find_variables_position():
     positions = ec._find_variables_position(expression)
     assert(len(positions) == 0)
 
+def test_find_builtin_function_position():
+    expression = "$(word $(words $(sources)), $(var2))"
+    positions = ec._find_builtin_function_position(expression)
+    assert positions == [(7,25), (0,35)]
+
 def test_find_and_replace_variables():
     expression = "$(word $(words $(sources)), $(var2))"
     expr, map_found = ec.find_and_replace_variables(expression)

@@ -78,7 +78,7 @@ def is_builtin_function(start, end, expression):
     # retrieve the keyword
     word = expression[:index]
 
-    # seqrch in keywords list
+    # search in keywords list
     if word in keywords:
         return True
 
@@ -96,6 +96,17 @@ def _find_variables_position(expression):
 
     return positions
 
+def _find_builtin_function_position(expression):
+    """Find all positions that match a builtin function keyword"""
+    matchers = is_expression_balanced(expression)
+    positions = []
+
+    for m in matchers:
+        is_builtin = is_builtin_function(m[0], m[1], expression)
+        if is_builtin:
+            positions.append(m)
+
+    return positions
 
 def _replace_variable(start, end, new_variable, expression):
     """Replace a substring at given position in an expression"""
