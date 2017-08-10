@@ -64,19 +64,21 @@ def is_variable(start, end, expression):
         return False
     return True
 
-def is_builtin_function(start, end, expression):
-    """Check if sub expression in delimiters is a builtin function keyword"""
-    # remove the first delimiter and eventual heading white space
-    # $(   strip ee,EE,street) => strip ee,EE,street)
-    expression = expression[start+2:].lstrip()
-    # find the first white space
-    index =  expression.find(' ')
+def _extract_function_name(expression):
+    """Extract function name from an expression with delimiters
+    $(the_key param1, param2) => the_key"""
+    expression = expression[2:].lstrip()
+    index = expression.find(' ')
 
     if index < 0:
-        return False
+        return None
 
+    return expression[:index]
+
+def is_builtin_function(expression):
+    """Check if sub expression in delimiters is a builtin function keyword"""
     # retrieve the keyword
-    word = expression[:index]
+    word = _extract_function_name(expression)
 
     # search in keywords list
     if word in keywords:
@@ -102,7 +104,8 @@ def _find_builtin_function_position(expression):
     positions = []
 
     for m in matchers:
-        is_builtin = is_builtin_function(m[0], m[1], expression)
+        _sub_expr = expression[m[0]:m[1]]
+        is_builtin = is_builtin_function(_sub_expr)
         if is_builtin:
             positions.append(m)
 
@@ -131,6 +134,21 @@ def _replace_variables(positions, expression):
 
     return exp, variables_subst_map
 
+def _replace_builtin_function(expression):
+    """Replace builtin function in an expression"""
+    import builtin_functions_converter
+    # extract function name
+    name = _extract_function_name(expression)
+    function_callable = "{}_".format(name)
+    # retrieve cmake syntax
+    syntax = getattr(builtin_functions_converter, function_callable)(expression)
+    return syntax
+
 def find_and_replace_variables(expression):
     positions = _find_variables_position(expression)
     return  _replace_variables(positions, expression)
+
+def find_and_replace_builtin_function(expression):
+    # find builtin function
+    # recursively replace builtin function
+    pass

@@ -52,12 +52,12 @@ def test_is_variable():
 def test_is_builtin_keyword():
     expression = "$(subst ee, EE, feet in the street)"
     l = len(expression)
-    result = ec.is_builtin_function(0,l,expression)
+    result = ec.is_builtin_function(expression)
     assert True == result
 
     expression = "ln -s $(    subst ee,EE,street)"
     l = len(expression)
-    result = ec.is_builtin_function(6, l, expression)
+    result = ec.is_builtin_function(expression[6:])
     assert True == result
 
 def test_replace_variable():
@@ -109,4 +109,11 @@ def test_find_and_replace_variables():
     expr, map_found = ec.find_and_replace_variables(expression)
     assert(expr == "$(word $(words __1), __0)")
 
+def test_replace_builtin_function():
+    expression = "$(subst ee, EE, feet on the street)"
+    result = ec._replace_builtin_function(expression)
+
+    expect = ("set(output \"\")\n"
+            "string(REPLACE \"ee\" \"EE\" ${output} \"feet on the street\")")
+    assert expect == result[0]
 
