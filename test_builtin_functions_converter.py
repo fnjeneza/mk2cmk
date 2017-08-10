@@ -19,8 +19,8 @@ def test_subst_():
     text = "$(subst ee, EE, feet on the street)"
     result, var = fc.subst_(text)
 
-    expect = """set(output "")
-              string(REPLACE "ee" "EE" ${output} "feet on the street")"""
+    expect = ("set(output \"\")\n"
+            "string(REPLACE \"ee\" \"EE\" ${output} \"feet on the street\")")
     assert expect == result
     assert "${output}" == var
 

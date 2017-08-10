@@ -36,11 +36,11 @@ def subst_(expression):
     """Return subst cmake equivalent"""
     _from, _to, _text = _extract_subst_argument(expression)
     output_var = "${output}"
-    expr = """set(output "")
-              string(REPLACE "{}" "{}" {} "{}")""".format(_from,
-                                                          _to,
-                                                          output_var,
-                                                          _text)
+    expr = ("set(output \"\")\n"
+            "string(REPLACE \"{}\" \"{}\" {} \"{}\")".format(_from,
+                                                             _to,
+                                                             output_var,
+                                                             _text))
     return expr, output_var
 
 def _extract_subst_argument(expression):
