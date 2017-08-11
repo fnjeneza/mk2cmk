@@ -53,3 +53,18 @@ def _extract_subst_argument(expression):
     reg = re.compile("\$\( *subst +(\w+), *(\w+), *([ \w]+) *\)")
     index = reg.search(expression)
     return index.group(1), index.group(2), index.group(3)
+
+def strip_(expression):
+    """Return a cmake strip equivqlent"""
+    key = "strip"
+    # extract argument
+    expression = expression[2:].lstrip()
+    index = expression.find(key)
+
+    if index != 0:
+        return None
+
+    expression = expression[index+len(key):len(expression)-1].strip()
+    output_var =  "${output}"
+    expr = "string(STRIP \"{}\" {})".format(expression, output_var)
+    return expr, output_var

@@ -24,3 +24,9 @@ def test_subst_():
     assert expect == result
     assert "${output}" == var
 
+def test_strip_():
+    text = "$(strip text to strip)"
+    result, var = fc.strip_(text)
+
+    assert "string(STRIP \"text to strip\" ${output})" == result
+    assert "${output}" == var
