@@ -90,3 +90,22 @@ def filter_out_(expression):
     return expr
 
 def word_(expression):
+    """Return a cmake word equivalent"""
+
+    key = "word"
+    #extract argument
+    expression = expression[2:].lstrip()
+    index = expression.find(key)
+
+    if index != 0:
+        return None
+
+    expression = expression[index+len(key):len(expression)-1].strip()
+    comma = expression.find(',')
+    lhs = expression[:comma]
+    rhs = expression[comma+1:]
+    _output = "${output}"
+
+
+    expr = "list(GET {} {} {})".format(rhs, lhs, _output)
+    return expr, _output
