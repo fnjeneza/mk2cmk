@@ -23,8 +23,6 @@ def ifneq_(arg1, arg2):
     """Return ifneq cmake equivalent"""
     return "if({} NOT EQUAL {})".format(arg1, arg2)
 
-def strip_(arg):
-    """ convert strip function """
 def ifdef_(arg):
     """ convert ifdef expression """
     pass
@@ -90,3 +88,5 @@ def filter_out_(expression):
             "endforeach(var)".format(var, rhs, lhs))
 
     return expr
+
+def word_(expression):
