@@ -109,3 +109,19 @@ def word_(expression):
 
     expr = "list(GET {} {} {})".format(rhs, lhs, _output)
     return expr, _output
+
+def wordlist_(expression):
+    import re
+    reg = re.compile("\$\(wordlist (\w+), (\w+), ([ \w]+)")
+    match = reg.match(expression)
+    start = match.group(1)
+    end = match.group(2)
+    rhs = match.group(3)
+    var = "${var}"
+    output = "${output}"
+
+    expr = ("set(output \"\")\n"
+            "foreach(var RANGE {} {})\n"
+            "  list(GET {} {} {})\n"
+            "endforeach()".format(start, end, rhs, var, output))
+    return expr
