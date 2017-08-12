@@ -68,3 +68,25 @@ def strip_(expression):
     output_var =  "${output}"
     expr = "string(STRIP \"{}\" {})".format(expression, output_var)
     return expr, output_var
+
+def filter_out_(expression):
+    """Return a cmake filter-out equivalent"""
+    key = "filter-out"
+    #extract argument
+    expression = expression[2:].lstrip()
+    index = expression.find(key)
+
+    if index != 0:
+        return None
+
+    expression = expression[index+len(key):len(expression)-1].strip()
+    comma = expression.find(',')
+    lhs = expression[:comma]
+    rhs = expression[comma+1:]
+    var = "${var}"
+
+    expr = ("foreach(var IN {})\n"
+            "  list(REMOVE_ITEM {} {})\n"
+            "endforeach(var)".format(var, rhs, lhs))
+
+    return expr
